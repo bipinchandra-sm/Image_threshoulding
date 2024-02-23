@@ -1,0 +1,44 @@
+Description: Local, global, and dynamic thresholding are common image processing techniques used to segment or binarize an image into foreground (object of interest) and background regions based on pixel intensity values. Each method has its own characteristics and is suitable for different types of images and applications:
+
+Global thresholding is a straightforward approach that involves applying a single fixed threshold value to the entire image. All pixels with intensity values greater than or equal to the chosen threshold are considered part of the foreground, while those with intensity values below the threshold belong to the background. This method is effective when there is a clear and consistent distinction between the object of interest and the background throughout the entire image. However, it may not perform well in cases of non-uniform lighting or varying contrast.
+
+Local thresholding, also known as adaptive thresholding, takes into account the local characteristics of the image. Instead of using a single global threshold, the image is divided into smaller local regions or neighborhoods. A separate threshold value is calculated and applied to each region based on its specific characteristics. This approach is particularly useful when dealing with images that have varying lighting conditions or contrast across different parts of the image. Methods for local thresholding can include mean-based, median-based, or Gaussian-based techniques.
+
+Dynamic thresholding, exemplified by Otsu's method, is an automated approach that determines the threshold value based on the statistical properties of the image. Otsu's thresholding calculates the threshold value by analyzing the histogram of pixel intensities. It aims to minimize the intraclass variance (variance within foreground and background) and maximize the interclass variance (variance between foreground and background), effectively finding the threshold that best separates the object from the background. Otsu's method is particularly useful when the image's intensity distribution exhibits clear separation, such as in images with bimodal or near-bimodal intensity distributions.
+
+Python code:
+# Import necessary libraries
+import cv2 				 # OpenCV library for image processing
+import numpy as np 			 # NumPy for numerical operations
+import matplotlib.pyplot as plt 	 # Matplotlib for plotting
+from google.colab.patches import cv2_imshow  # Colab-specific function for displaying images
+
+# Load input image in grayscale
+image = cv2.imread('HappyFish.jpg', 0)  # 0 indicates loading the image in grayscale mode
+
+# Apply global thresholding (binary thresholding with threshold value of 127)
+# Pixels with intensity greater than 127 will be set to 255 (white), otherwise 0 (black)
+_, global_thresholded = cv2.threshold(image, 127, 255, cv2.THRESH_BINARY)
+
+# Apply local thresholding using adaptive thresholding method
+# The threshold value is the mean of the neighborhood area minus a constant (2 in this case)
+local_thresholded = cv2.adaptiveThreshold(image, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 11, 2)
+# 11 is the block size (neighborhood area for calculating the threshold), 2 is the constant subtracted from mean
+
+# Apply dynamic thresholding using Otsu's thresholding method
+# Otsu's method automatically calculates an optimal threshold value
+_, dynamic_thresholded = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+
+# Display original, global thresholded, local thresholded, and dynamic thresholded images
+cv2_imshow(image)  # Display original grayscale image
+cv2_imshow(global_thresholded)  # Display global thresholded image
+cv2_imshow(local_thresholded)  # Display local thresholded image
+cv2_imshow(dynamic_thresholded)  # Display dynamically thresholded image
+
+# Save the processed images to files
+cv2.imwrite('Original.jpg', image)  # Save original image as 'Original.jpg'
+cv2.imwrite('Global.jpg', global_thresholded)  # Save global thresholded image as 'Global.jpg'
+cv2.imwrite('Local.jpg', local_thresholded)  # Save local thresholded image as 'Local.jpg'
+cv2.imwrite('Dynamic.jpg', dynamic_thresholded)  # Save dynamic thresholded image as 'Dynamic.jpg'
+
+Code link in colab: https://colab.research.google.com/drive/1EeMz_Ki4euOuMQXGhzYX0AJW0CkTST4C#scrollTo=MrHXNU832bx0
